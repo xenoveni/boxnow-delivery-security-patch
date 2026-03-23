@@ -12,9 +12,18 @@
 
 ## 🛠️ Η Λύση (Εφαρμογή του Patch)
 
-Μπορείτε να διορθώσετε το plugin κάνοντας τις παρακάτω 2 χειροκίνητες αλλαγές (ή αντικαθιστώντας τα αρχεία με αυτά του branch).
+Υπάρχουν 3 διαφορετικοί τρόποι για να προστατέψετε το plugin σας. Διαλέξτε αυτόν που σας βολεύει περισσότερο:
 
-### Αλλαγή 1: `box-now-delivery.php`
+### Επιλογή 1: Άμεση Αντικατάσταση Αρχείων (Προτείνεται)
+Αντί να γράψετε κώδικα, μπορείτε απλά να κατεβάσετε τα έτοιμα, διορθωμένα αρχεία από αυτό το GitHub αποθετήριο:
+1. Κατεβάστε το αρχείο `box-now-delivery.php` και αντικαταστήστε το υπάρχον αρχείο στον κεντρικό φάκελο του plugin στο server σας (`wp-content/plugins/box-now-delivery/`).
+2. Κατεβάστε το αρχείο `box-now-delivery-validation.php` από τον φάκελο `includes/` του αποθετηρίου και αντικαταστήστε το υπάρχον αρχείο στο server σας (`wp-content/plugins/box-now-delivery/includes/`).
+3. Αυτό ήταν! Είστε πλέον ασφαλείς.
+
+### Επιλογή 2: Χειροκίνητη Τροποποίηση Κώδικα
+Αν προτιμάτε να κατανοήσετε ή να ελέγξετε τον κώδικα ασφαλείας μόνοι σας, κάντε τις παρακάτω χειροκίνητες αλλαγές στα αρχεία του plugin:
+
+**Αλλαγή Α: `box-now-delivery.php`**
 Αναζητήστε τις συναρτήσεις `boxnow_cancel_voucher_ajax_handler`, `boxnow_create_box_now_vouchers_callback`, και `boxnow_print_box_now_voucher_callback`. 
 
 Στην **αρχή** της κάθε συνάρτησης προσθέστε τον παρακάτω έλεγχο:
@@ -32,7 +41,7 @@ if ( ! current_user_can( 'manage_woocommerce' ) ) {
 //add_action('wp_ajax_nopriv_print_box_now_voucher', 'boxnow_print_box_now_voucher_callback');
 ```
 
-### Αλλαγή 2: `includes/box-now-delivery-validation.php`
+**Αλλαγή Β: `includes/box-now-delivery-validation.php`**
 Βρείτε τη συνάρτηση `boxnow_settings_save()` και ακριβώς **πριν** από τον έλεγχο του nonce, προσθέστε:
 ```php
 // SECURITY FIX: Only allow admins to save settings.
@@ -41,8 +50,8 @@ if ( ! current_user_can( 'manage_options' ) ) {
 }
 ```
 
-### Πώς να εφαρμόσετε το Patch μέσω αρχείου `.patch`:
-Αν έχετε πρόσβαση σε τερματικό (π.χ. SSH) και το εργαλείο `patch` εγκατεστημένο, η διαδικασία είναι αυτοματοποιημένη:
+### Επιλογή 3: Εφαρμογή του Patch μέσω Τερματικού (`.patch` file)
+Αν έχετε πρόσβαση σε τερματικό (π.χ. SSH) και το εργαλείο `patch` εγκατεστημένο, η διαδικασία εφαρμόζεται αυτοματοποιημένα:
 1. Κατεβάστε το αρχείο `cve-2026-24571.patch` από αυτό το αποθετήριο.
 2. Ανεβάστε το αρχείο μέσα στον κεντρικό φάκελο του plugin σας (συνήθως `wp-content/plugins/box-now-delivery/`).
 3. Ανοίξτε ένα τερματικό στον φάκελο του plugin.
