@@ -1,8 +1,23 @@
 # BOX NOW Delivery - Unofficial Security Patch
 
-Αυτό το αποθετήριο δημιουργήθηκε για να παρέχει ανεπίσημες διορθώσεις ασφαλείας (security patches) για το WordPress plugin **BOX NOW Delivery** (εκδόσεις **3.0.2** και προηγούμενες).
+Αυτό το αποθετήριο δημιουργήθηκε για να παρέχει ανεπίσημες διορθώσεις ασφαλείας (security patches) για το WordPress plugin **BOX NOW Delivery** (εκδόσεις **3.2.0** και προηγούμενες).
 
-## 🚨 Το Πρόβλημα (Vulnerabilities)
+## 🆕 v3.2.0 Fixes (Blank Page & 403 Forbidden)
+
+Στην έκδοση **v3.2.0**, εμφανίστηκαν δύο νέα κρίσιμα προβλήματα:
+1. **Λευκή Σελίδα (Blank Page)** κατά την εκτύπωση PDF: Προκαλούνταν από PHP Warnings που διέκοπταν το binary stream του PDF.
+2. **403 Forbidden (-1)** σφάλμα: Λόγω caching του Browser, το JavaScript δεν έστελνε τα απαραίτητα `security` nonces.
+
+### ✅ Η Διόρθωση (Patch v3.2.0)
+- **Output Buffering**: Προστέθηκε το `ob_end_clean()` πριν το output του PDF για να καθαρίσει τυχόν "σκουπίδια" στον κώδικα.
+- **Cache Busting**: Χρησιμοποιήθηκε το `time()` στο versioning των scripts για να αναγκαστεί ο browser να κατεβάσει την τελευταία έκδοση.
+- **Secure Nonces**: Προστέθηκε αυστηρός έλεγχος `wp_verify_nonce` σε όλα τα endpoints.
+
+**Οδηγίες:** Αντικαταστήστε το `box-now-delivery.php` και το `includes/box-now-delivery-print-order.php` με τα αρχεία αυτού του αποθετηρίου.
+
+
+
+## 🆕 v3.0.2 Fixes (Fixed Vulnerability CVE-2026-24571)
 Κατά τη διάρκεια ενός Security Audit εντοπίστηκαν τα εξής προβλήματα Broken Access Control (Missing Authorization):
 
 1. **[CVE-2026-24571](https://www.wordfence.com/threat-intel/vulnerabilities/wordpress-plugins/box-now-delivery/box-now-delivery-302-missing-authorization) (Vouchers AJAX):** Πολλά AJAX hooks όπως τα `cancel_voucher`, `create_box_now_vouchers`, και `print_box_now_voucher` στο κεντρικό αρχείο `box-now-delivery.php` ήταν προσβάσιμα ακόμα και σε unauthenticated/low-privileged χρήστες, καθώς χρησιμοποιούσαν `wp_ajax_nopriv_` και δεν έκαναν κανέναν έλεγχο δικαιωμάτων (`current_user_can()`).
